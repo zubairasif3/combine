@@ -15,11 +15,35 @@ class ModuleSeeder extends Seeder
     {
 
         ModuleModel::create([
+            "title" => "Engineer Dashboard"
+        ]);
+
+        ModuleModel::create([
+            "title" => "Contract Dashboard"
+        ]);
+
+        ModuleModel::create([
+            "title" => "Assign Dashboard"
+        ]);
+
+        ModuleModel::create([
             "title" => "Jobs"
+        ]);
+        
+        ModuleModel::create([
+            "title" => "Contracts"
+        ]);
+        
+        ModuleModel::create([
+            "title" => "Payments"
         ]);
 
         ModuleModel::create([
             "title" => "Engineers"
+        ]);
+
+        ModuleModel::create([
+            "title" => "Search Engineers"
         ]);
 
         ModuleModel::create([

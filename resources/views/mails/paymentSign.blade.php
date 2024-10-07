@@ -1,4 +1,4 @@
-<b>Dear {{$payment->job->engineer_user->name}}</b>
+<b>Dear {{$payment->job->engineer_user->name ?? ""}}</b>
 <br>
 <br>
 <div>

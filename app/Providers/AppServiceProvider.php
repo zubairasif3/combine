@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\ModuleModel;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        view()->share(["modules" => ModuleModel::all()]);
+        if (!app()->runningInConsole() && Schema::hasTable('module')) {
+            view()->share(["modules" => ModuleModel::all()]);
+        }
     }
 }

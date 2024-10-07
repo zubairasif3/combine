@@ -55,9 +55,13 @@
            <table class="table table-flush" id="datatable">
               <thead class="thead-light">
                 <tr>
-                    <th class="border-bottom fw-bolder" scope="col">Name</th>
+                    <th class="border-bottom fw-bolder" scope="col">Engineer Name</th>
                     <th class="border-bottom fw-bolder" scope="col">Email</th>
                     <th class="border-bottom fw-bolder" scope="col">MOBILE NO</th>
+                    <th class="border-bottom fw-bolder" scope="col">Postcode Cover</th>
+                    <th class="border-bottom fw-bolder" scope="col">Job Type</th>
+                    <th class="border-bottom fw-bolder" scope="col">Available</th>
+                    <th class="border-bottom fw-bolder" scope="col">Rating</th>
                     <th class="border-bottom fw-bolder" scope="col">Action</th>
                 </tr>
               </thead>
@@ -65,9 +69,56 @@
                 @foreach ($engineers as $engineer)
                     <tr>
                         <td class=" text-gray-900">{{$engineer->name}}</td>
-                        <td class=" text-gray-900">{{$engineer->email}}</td>
-                        <td class=" text-gray-900">{{$engineer->phone}}</td>
+                        <td class=" text-gray-900">{{$engineer->user->email ?? ""}}</td>
+                        <td class=" text-gray-900">{{$engineer->user->phone ?? ""}}</td>
+                        <td class=" text-gray-900">
+                            @php
+                                $codes = explode(",",$engineer->postal_codes);
+                                $bgClasses = ["bg-success","bg-danger","bg-secondary","bg-tertiary","bg-warning"];
+                            @endphp
+                            @foreach($codes as $code)
+
+                            <span class="badge super-badge bg-success ms-1">{{$code}}</span>
+                            @endforeach
+                            {{-- <span class="badge super-badge bg-success ms-1">AL</span>
+                            <span class="badge super-badge bg-success ms-1">CB</span>
+                            <span class="badge super-badge bg-success ms-1">CM</span> --}}
+                        </td>
+                        <td class=" text-gray-900">
+                            @foreach($engineer->jobTypes as $type)
+                            @php
+                                  $randomKey  = array_rand($bgClasses);
+                            @endphp
+                            <span class="badge super-badge {{$type->jobtype->bgcolor}} ms-1">{{$type->jobtype->title}}</span>
+
+                            @endforeach
+                                                {{-- <span class="badge super-badge bg-info ms-1">Plumbing</span>
+                                                <span class="badge super-badge bg-success ms-1">Drainage</span>
+                                                <span class="badge super-badge bg-danger ms-1">Heating</span>
+                                                <span class="badge super-badge bg-secondary ms-1">Gas</span>
+                                                <span class="badge super-badge bg-tertiary ms-1">Unvented</span>
+                                                <span class="badge super-badge bg-warning ms-1">Electricity</span> --}}
+                        </td>
+                        <td class=" text-gray-900">
+                           @php
+                                $todayAvailable = $engineer->todayAvailablity();
+                                if($todayAvailable != null){
+
+                                }
+                           @endphp
+                           @if($todayAvailable != null)
+                                {{date("h:i A",strtotime($todayAvailable->start_time))}}
+                                -
+                                {{date("h:i A",strtotime($todayAvailable->end_time))}}
+                           @endif
+                        </td>
+                        <td class=" text-gray-900">
+                            {{$engineer->rating}}
+                        </td>
                         <td>
+                            <a href="{{url('engineers/availability/' . $engineer->id)}}" class="btn btn-outline-primary action-btn d-inline-flex align-items-center">
+                                <svg class="icon icon-xxs me-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg> Set Availablity
+                            </a>
                             <a href="{{url('engineers/' . $engineer->id . '/edit')}}" class="btn btn-outline-success action-btn d-inline-flex align-items-center">
                                 <svg class="icon icon-xxs me-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg> Edit
                             </a>

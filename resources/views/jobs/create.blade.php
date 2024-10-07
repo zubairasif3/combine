@@ -16,6 +16,9 @@
                   <div class="form-group mb-4"><label for="cartInputEmail1">Postcode *</label> <input name="postcode" type="text" class="form-control" placeholder="NB ORE"   required></div>
                </div>
                <div class="col-12 col-lg-6">
+                  <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No *</label> <input name="job_invoice_no" type="number" class="form-control" placeholder="89701"   required></div>
+               </div>
+               <div class="col-12 col-lg-6">
                   <div class="form-group mb-4">
                      <label for="cartInputEmail1">Status *</label>
                      <select name="status" type="number" class="form-control" placeholder="Status" required>

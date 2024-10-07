@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Services\MessageBirdService;
 use App\Models\InfoBipModel;
+use App\Services\DistanceService;
 
 use Illuminate\Routing\Controller as BaseController;
 
@@ -13,10 +14,12 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
+    protected $distanceService;
     protected $messageBird;
-    public function __construct(MessageBirdService $messageBird)
+    public function __construct(MessageBirdService $messageBird, DistanceService $distanceService)
     {
         $this->messageBird = $messageBird;
+        $this->distanceService = $distanceService;
     }
     public function messageBirdSMS($recipient, $message)
     {
@@ -30,4 +33,23 @@ class Controller extends BaseController
         return InfoBipModel::SendEmail($email,$html,$subject);
     }
     
+    
+    public function postcodeDistance($postcode1, $postcode2)
+    {
+        $distance = $this->distanceService->getDistance($postcode1, $postcode2);
+        if ($distance !== null) {
+            return round(($distance  * 0.000621371), 2);
+        }
+        return "error";
+    }
+
+    public function latlongDistance($postcode1, $lat, $long)
+    {
+        $distance = $this->distanceService->getDistanceByLatLong($postcode1, $lat, $long);
+        // meter to miles
+        if ($distance !== null) {
+            return round(($distance  * 0.000621371), 2);
+        }
+        return "error";
+    }
 }

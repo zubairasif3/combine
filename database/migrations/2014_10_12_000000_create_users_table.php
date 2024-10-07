@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string("show_password")->nullable();
             $table->integer("user_type_id")->default(1);
             $table->string("username")->nullable();
+            $table->integer('is_login')->default(0)->nullable();
+            $table->integer('gmail_login')->default(0)->nullable();
+            $table->string('gmail_refresh_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

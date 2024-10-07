@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("customer_email")->nullable();
             $table->string("postcode")->nullable();
             $table->integer("created_by")->nullable();
+            $table->string("job_invoice_no")->nullable();
             $table->string("added_by")->nullable();
             $table->date("date")->nullable();
             $table->integer("engineer_id")->nullable();

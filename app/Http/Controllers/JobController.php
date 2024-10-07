@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
-use App\Models\InfoBipSms;
+use App\Models\Contract;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -18,10 +19,11 @@ class JobController extends Controller
     public function index()
     {
         $currentDate = Carbon::now()->toDateString();
+        $job = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', '<' , $currentDate)->where('status', 'Active')->orderBy('date', 'asc')->get();
         $job1 = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', $currentDate)->where('status', 'Active')->orderBy('date', 'asc')->get();
         $job2 = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', '>' , $currentDate)->where('status', 'Active')->orderBy('date', 'asc')->get();
         $job3 = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('status', 'Completed')->orderBy('date', 'asc')->get();
-        return view("jobs/index",compact('job1', 'job2', 'job3'));
+        return view("jobs/index",compact('job', 'job1', 'job2', 'job3'));
     }
 
     /**
@@ -125,7 +127,7 @@ class JobController extends Controller
             'engineer_id' => $request->input('engineer_id')
         ]);
 
-        return redirect()->route('jobs.index', $id)->with('success', 'Engineer assigned successfully.');
+        return back()->with('success', 'Engineer assigned successfully.');
     }
 
     public function AssignAgent($id)
@@ -192,14 +194,17 @@ class JobController extends Controller
 
         if ($job) {
             $currentDate = Carbon::now()->toDateString();
+            $job = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', '<' , $currentDate)->where('status', 'Active')->orderBy('date', 'asc')->get();
             $job1 = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', $currentDate)->where('status', 'Active')->orderBy('date', 'asc')->get();
             $job2 = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', '>' , $currentDate)->where('status', 'Active')->orderBy('date', 'asc')->get();
             $job3 = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('status', 'Completed')->orderBy('date', 'asc')->get();
+            $html = view('includes.mainDashboard', ['jobs' => $job])->render();
             $html1 = view('includes.mainDashboard', ['jobs' => $job1])->render();
             $html2 = view('includes.mainDashboard', ['jobs' => $job2])->render();
             $html3 = view('includes.mainDashboard', ['jobs' => $job3])->render();
             return response()->json([
                 'status' => 'success',
+                'data0' => $html,
                 'data1' => $html1,
                 'data2' => $html2,
                 'data3' => $html3
@@ -219,7 +224,7 @@ class JobController extends Controller
         if ($job) {
             $currentDate = Carbon::now()->toDateString();
             $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(3))->where('date', $currentDate)->where('status','active')->get();
-            $html = view('includes.tvDashbord', ['jobs' => $jobs])->render();
+            $html = view('tv.data.assign', ['jobs' => $jobs])->render();
             return response()->json([
                 'status' => 'success',
                 'data' => $html
@@ -230,6 +235,128 @@ class JobController extends Controller
     }
     
     
+    // Contracts Functions
+    public function Contracts()
+    {
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+        return view("jobs/contracts",compact('jobs'));
+    }
+    public function ContractSent($id)
+    {
+        $contract = new Contract;
+        $contract->job_id = $id;
+        $contract->sent_by = auth()->user()->id;
+        $contract->status = "sent";
+        $contract->sent_time = Carbon::now();
+        $contract->save();
+        return redirect("contracts")->with("success","Contract Sent Successfully");
+    }
+    public function ContractReceived($id)
+    {
+        $contract = Contract::find($id);
+        $contract->status = "received";
+        $contract->received_time = Carbon::now();
+        if ($contract->job->engineer_user) {
+            $html = view("mails.contractSign",compact('contract'))->render();
+            $this->InfoBipMail($contract->job->engineer_user->email,$html,"Contract has been signed");
+            $message = "Dear ".$contract->job->engineer_user->name.", The contract has been signed for the Job at ".$contract->job->postcode.". Please only proceed when payment has also been confirmed as paid. You will be informed once payment is received by email and sms.";
+            $correctphone = $contract->job->engineer_user->phone;
+            if (substr($correctphone, 0, 1) === '0') {
+                $correctphone = substr($correctphone, 1);
+            }
+            $correctphone = 44 . $correctphone;
+            $dataa = $this->messageBirdSMS($correctphone,$message);
+        }
+        $contract->inform_time = Carbon::now();
+        $contract->save();
+        return redirect("contracts")->with("success","Contract Received Successfully");
+    }
+    
+    // Payment Functions
+
+    public function Payments()
+    {
+        
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+        
+        return view("jobs/payments",compact('jobs'));
+    }
+    public function PaymentSent($id)
+    {
+        $payment = new Payment;
+        $payment->job_id = $id;
+        $payment->sent_by = auth()->user()->id;
+        $payment->status = "sent";
+        $payment->sent_time = Carbon::now();
+        $payment->save();
+        return redirect("payments")->with("success","Payment Sent Successfully");
+    }
+    public function PaymentReceived($id)
+    {
+        $payment = Payment::find($id);
+        $payment->status = "received";
+        $payment->received_time = Carbon::now();
+        if ($payment->job->engineer_user) {
+            $html = view("mails.paymentSign",compact('payment'))->render();
+            $this->InfoBipMail($payment->job->engineer_user->email,$html,"Payment has been Received");
+            $message = "Dear ".$payment->job->engineer_user->name.", The Payment has been received for the Job at ".$payment->job->postcode.". Please only proceed when contract has also been confirmed as paid. You will be informed once the contract is received by email and sms";
+            $correctphone = $payment->job->engineer_user->phone;
+            if (substr($correctphone, 0, 1) === '0') {
+                $correctphone = substr($correctphone, 1);
+            }
+            $correctphone = 44 . $correctphone;
+            $dataa = $this->messageBirdSMS($payment->job->engineer_user->phone,$message);
+        }
+        $payment->inform_time = Carbon::now();
+        $payment->save();
+        return redirect("payments")->with("success","Payment Received Successfully");
+    }
+    
+    // Check latest Data Ajax function
+    public function contractLatestData(Request $request)
+    {
+        $loadedTime = Carbon::parse($request->input('loaded_time'));
+        $sevenDaysAgo = Carbon::now()->subDays(7);
+        // Query to get new or updated jobs since the page was loaded
+        $contract = Contract::where('created_at', '>', $loadedTime)->orWhere('updated_at', '>', $loadedTime)->first();
+        $payment = Payment::where('created_at', '>', $loadedTime)->orWhere('updated_at', '>', $loadedTime)->first();
+
+        if ($contract || $payment) {
+            $contracts = Contract::latest()->take(10)->get()->reject(function ($contract) use ($sevenDaysAgo) {
+                            return $contract->job->created_at < $sevenDaysAgo;
+                        });
+            $payments = Payment::latest()->take(10)->get()->reject(function ($payment) use ($sevenDaysAgo) {
+                            return $payment->job->created_at < $sevenDaysAgo;
+                        });
+            $html = view('includes.contractMainDashboard', ['contracts' => $contracts , 'payments' => $payments])->render();
+            return response()->json([
+                'status' => 'success',
+                'data' => $html
+            ]);
+        } else {
+            return response()->json(['status' => 'no_updates']);
+        }
+    }
+    public function contractLatestTvData(Request $request)
+    {
+        $loadedTime = Carbon::parse($request->input('loaded_time'));
+
+        // Query to get new or updated jobs since the page was loaded
+        $job = Job::where('created_at', '>', $loadedTime)->orWhere('updated_at', '>', $loadedTime)->first();
+        $contract = Contract::where('created_at', '>', $loadedTime)->orWhere('updated_at', '>', $loadedTime)->first();
+        $payment = Payment::where('created_at', '>', $loadedTime)->orWhere('updated_at', '>', $loadedTime)->first();
+
+        if ($job || $contract || $payment) {
+            $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+            $html = view('tv.data.contract', ['jobs' => $jobs])->render();
+            return response()->json([
+                'status' => 'success',
+                'data' => $html
+            ]);
+        } else {
+            return response()->json(['status' => 'no_updates']);
+        }
+    }
     
     // Email-check function
     
@@ -301,7 +428,7 @@ class JobController extends Controller
         }
         return response()->json(['status' => 'gmial login']);
     }
-    
+
     public function listEmails(Request $request)
     {
         $client = new GoogleClient();
@@ -412,38 +539,118 @@ class JobController extends Controller
         
         $changes = 0;
         foreach ($messages as $message) {
-            $subject = $message['subject'];
-            $body = preg_replace('/\s+/', ' ', strip_tags($message['body']));
-            $body = trim($body);
-            if (strpos($subject, "PM247 || NEW JOB BOOKED") !== false || strpos($subject, "PM247 || JOB CANCELLED") !== false) {
-                $details = $this->extractJobDetails($body);
-            
-                $job = Job::withTrashed()->where('customer_email', $details['email'])
-                          ->where('postcode', $details['postcode'])
-                        //   ->where('date', $details['date'])
-                          ->where('added_by', $details['username'])
-                          ->first();
-                if (strpos($subject, "PM247 || NEW JOB BOOKED") !== false) {
-                    if (!$job) {
-                        Job::create([
-                            'customer_email' => $details['email'],
-                            'postcode' => $details['postcode'],
-                            'date' => $details['date'],
-                            'added_by' => $details['username'],
-                        ]);
-                        $changes++;
-                    }
-                } elseif (strpos($subject, "PM247 || JOB CANCELLED") !== false) {
-                    if ($job && $job->deleted_at == null) {
-                        $job->delete();
-                        $changes++;
-                    }
+            $changes += $this->assignMailGetter($message, $changes);
+            $changes += $this->contractMailGetter($message, $changes);
+        }
+        return $changes;
+    }
+    
+    private function assignMailGetter($message, $changes){
+        $subject = $message['subject'];
+        $body = preg_replace('/\s+/', ' ', strip_tags($message['body']));
+        $body = trim($body);
+        if (strpos($subject, "PM247 || NEW JOB BOOKED") !== false || strpos($subject, "PM247 || JOB CANCELLED") !== false) {
+            $details = $this->extractJobDetails($body);
+        
+            $job = Job::withTrashed()->where('customer_email', $details['email'])
+                      ->where('postcode', $details['postcode'])
+                    //   ->where('date', $details['date'])
+                      ->where('added_by', $details['username'])
+                      ->first();
+            if (strpos($subject, "PM247 || NEW JOB BOOKED") !== false) {
+                if (!$job) {
+                    Job::create([
+                        'customer_email' => $details['email'],
+                        'postcode' => $details['postcode'],
+                        'date' => $details['date'],
+                        'added_by' => $details['username'],
+                    ]);
+                    $changes++;
+                }
+            } elseif (strpos($subject, "PM247 || JOB CANCELLED") !== false) {
+                if ($job && $job->deleted_at == null) {
+                    $job->delete();
+                    $changes++;
                 }
             }
         }
         return $changes;
     }
-    
+    private function contractMailGetter($message, $changes){
+        $subject = $message['subject'];
+        $body = preg_replace('/\s+/', ' ', strip_tags($message['body']));
+        $body = trim($body);
+        if (strpos($subject, "Contract") !== false && strpos($subject, "sent to") !== false) {
+            if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->contract == null){
+                    $this->ContractSent($job->id);
+                    $changes++;
+                }
+            }
+        } else if (strpos($subject, "Contract") !== false && strpos($subject, "has been signed by") !== false) {
+            if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->contract){
+                    $contract = $job->contract;
+                    if($contract->status !== 'received'){
+                        $this->ContractReceived($contract->id);
+                        $changes++;
+                    }
+                }
+            }
+        } else if (strpos($subject, "A new invoice was created for ") !== false) {
+            if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->payment == null){
+                    $this->PaymentSent($job->id);
+                    $changes++;
+                }
+            }
+        } else if (strpos($subject, "An invoice was paid by") !== false) {
+            if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->payment){
+                    $payment = $job->payment;
+                    if($payment->status !== 'received'){
+                        $this->PaymentReceived($payment->id);
+                        $changes++;
+                    }
+                }
+            }
+        } else if (strpos($subject, "Bank Transfer Received") !== false) {
+            if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]*)?(\d+)/', $body, $matches)) {
+                $invoice_number = $matches[3];
+                $job = Job::where('job_invoice_no',$invoice_number)->latest()->first();
+                if($job){
+                    if($job->payment){
+                        $payment = $job->payment;
+                        if($payment->status !== 'received'){
+                            $this->PaymentReceived($payment->id);
+                            $changes++;
+                        }
+                    }else{
+                        $payment = new Payment;
+                        $payment->job_id = $job->id;
+                        $payment->save();
+                        $this->PaymentReceived($payment->id);
+                    }
+                }
+            }
+        } else if (strpos($subject, "VoltPayByLinkMail") !== false) {
+            $email = $message['toEmail'];
+            $job = Job::where('customer_email',$email)->latest()->first();
+            if($job && $job->payment == null){
+                $this->PaymentSent($job->id);
+                $changes++;
+            }
+        }
+        return $changes;
+    }
 
     private function getBodyFromPayload($payload) {
         $body = '';
@@ -478,7 +685,7 @@ class JobController extends Controller
     
         return $body;
     }
-    
+        
     private function extractJobDetails($body) {
         preg_match('/Owner email address:\s*([^\s]+)/', $body, $email);
         preg_match('/Job Created User Name:\s*(.+?)\s*Job Created Time:/s', $body, $username);

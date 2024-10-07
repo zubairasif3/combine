@@ -43,37 +43,55 @@
                 </a>
             </li>
             <li role="separator" class="mt-4 mb-4 border-gray-700 dropdown-divider"></li>
-            <li class="nav-item">
-                <span class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#submenu-dashboard">
-                   <span>
-                      <span class="sidebar-icon">
-                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                         </svg>
-                      </span>
-                      <span class="sidebar-text">Dashboard</span> 
-                   </span>
-                   <span class="link-arrow">
-                      <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                      </svg>
-                   </span>
-                </span>
-                <div class="multi-level collapse" role="list" id="submenu-dashboard" aria-expanded="false">
-                   <ul class="flex-column nav">
-                      <li class="nav-item"><a href="../../pages/dashboard/dashboard.html" class="nav-link"><span class="sidebar-text-contracted">O</span> <span class="sidebar-text">Overview</span></a></li>
-                      <li class="nav-item"><a href="../../pages/dashboard/traffic-sources.html" class="nav-link"><span class="sidebar-text-contracted">T</span> <span class="sidebar-text">All Traffic</span></a></li>
-                      <li class="nav-item"><a href="../../pages/dashboard/app-analysis.html" class="nav-link"><span class="sidebar-text-contracted">P</span> <span class="sidebar-text">Product Analysis</span></a>
-                      </li>
-                   </ul>
-                </div>
-             </li>
-            <li role="separator" class="mt-4 mb-4 border-gray-700 dropdown-divider"></li>
-
-            @if(auth()->user()->hasReadWritePermission(1))
-                <li class="nav-item {{request()->path() === '/' ? 'active' : ''}}">
-                    <a href="{{url('/')}}"  class="nav-link">
+            @if(auth()->user()->hasReadWritePermission(1) || auth()->user()->hasReadWritePermission(2) || auth()->user()->hasReadWritePermission(3))
+                <li class="nav-item">
+                    <span class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#submenu-dashboard" aria-expanded="{{strpos(request()->path(),'dashboard/') !== false ? 'true' : 'false'}}">
+                    <span>
+                        <span class="sidebar-icon">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                                <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                            </svg>
+                        </span>
+                        <span class="sidebar-text">Dashboard</span> 
+                    </span>
+                    <span class="link-arrow">
+                        <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    </span>
+                    <div class="multi-level collapse {{strpos(request()->path(),'dashboard/') !== false ? 'show' : ''}}" role="list" id="submenu-dashboard" aria-expanded="{{strpos(request()->path(),'dashboard/') !== false ? 'true' : 'false'}}">
+                    <ul class="flex-column nav">
+                        @if(auth()->user()->hasReadWritePermission(3))
+                            <li class="nav-item text-center {{strpos(request()->path(),'dashboard/assign') !== false ? 'active' : ''}}">
+                                <a href="{{ url('dashboard/assign') }}" class="nav-link px-4">
+                                    <span class="sidebar-text-contracted">A</span> <span class="sidebar-text">Assign Dashboard</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if(auth()->user()->hasReadWritePermission(1))
+                            <li class="nav-item text-center {{strpos(request()->path(),'dashboard/engineer') !== false ? 'active' : ''}}">
+                                <a href="{{ url('dashboard/engineer') }}" class="nav-link px-4">
+                                    <span class="sidebar-text-contracted">E</span> <span class="sidebar-text">Engineer Dashboard</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if(auth()->user()->hasReadWritePermission(2))
+                            <li class="nav-item text-center {{strpos(request()->path(),'dashboard/contract') !== false ? 'active' : ''}}">
+                                <a href="{{ url('dashboard/contract') }}" class="nav-link px-4">
+                                    <span class="sidebar-text-contracted">C</span> <span class="sidebar-text">Contract Dashboard</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                    </div>
+                </li>
+                <li role="separator" class="mt-4 mb-4 border-gray-700 dropdown-divider"></li>
+            @endif
+            @if(auth()->user()->hasReadWritePermission(4))
+                <li class="nav-item {{strpos(request()->path(),'jobs') !== false ? 'active' : ''}}">
+                    <a href="{{url('jobs')}}"  class="nav-link">
                         <span class="sidebar-icon">
                             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -88,7 +106,41 @@
                 </li>
                 <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
             @endif
-            @if(auth()->user()->hasReadWritePermission(2))
+            @if(auth()->user()->hasReadWritePermission(5))
+                <li class="nav-item {{strpos(request()->path(),'contracts') !== false ? 'active' : ''}}">
+                    <a href="{{url('contracts')}}" class="nav-link">
+                        <span class="sidebar-icon">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </span>
+                        <span class="sidebar-text">Contracts</span>
+                    </a>
+                </li>
+                <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
+            @endif
+            @if(auth()->user()->hasReadWritePermission(6))
+                <li class="nav-item {{strpos(request()->path(),'payments') !== false ? 'active' : ''}}">
+                    <a href="{{url('payments')}}" class="nav-link">
+                        <span class="sidebar-icon">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z"
+                                    clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </span>
+                        <span class="sidebar-text">Payments</span>
+                    </a>
+                </li>
+                <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
+            @endif
+            @if(auth()->user()->hasReadWritePermission(7))
                 <li class="nav-item {{strpos(request()->path(),'engineers') !== false ? 'active' : ''}}">
                     <a href="{{url('engineers')}}" class="nav-link">
                         <span class="sidebar-icon">
@@ -100,8 +152,22 @@
                     </a>
                 </li>
                 <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
+            @endif  
+            @if(auth()->user()->hasReadWritePermission(8))
+                <li class="nav-item {{strpos(request()->path(),'search') !== false ? 'active' : ''}}">
+                    <a href="{{url('search')}}" class="nav-link">
+                        <span class="sidebar-icon">
+                            <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clip-rule="evenodd"
+                                ></path>
+                            </svg>
+                        </span>
+                        <span class="sidebar-text">Search Engineers</span>
+                    </a>
+                </li>
+                <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
             @endif
-            @if(auth()->user()->hasReadWritePermission(3))
+            @if(auth()->user()->hasReadWritePermission(9))
                 <li class="nav-item {{strpos(request()->path(),'users') !== false ? 'active' : ''}}">
                     <a href="{{url('users')}}" class="nav-link {{strpos(request()->path(),'users') !== false ? 'active' : ''}}">
                         <span class="sidebar-icon">
@@ -114,15 +180,42 @@
                 </li>
                 <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
             @endif
-            <li class="nav-item {{strpos(request()->path(),'tv') !== false ? 'active' : ''}}">
-                <a href="{{url('tv-view')}}" class="nav-link">
-                    <span class="sidebar-icon">
-                        <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd"></path>
-                        </svg>
-                    </span>
-                    <span class="sidebar-text">TV</span>
-                </a>
+            <li class="nav-item">
+                <span class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#submenu-tv" aria-expanded="{{strpos(request()->path(),'tv/') !== false ? 'true' : 'false'}}">
+                   <span>
+                      <span class="sidebar-icon">
+                         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                            <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                         </svg>
+                      </span>
+                      <span class="sidebar-text">Tv</span> 
+                   </span>
+                   <span class="link-arrow">
+                      <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                      </svg>
+                   </span>
+                </span>
+                <div class="multi-level collapse {{strpos(request()->path(),'tv-view/') !== false ? 'show' : ''}}" role="list" id="submenu-tv" aria-expanded="{{strpos(request()->path(),'tv/') !== false ? 'true' : 'false'}}">
+                   <ul class="flex-column nav">
+                      <li class="nav-item text-center {{strpos(request()->path(),'tv/engineer') !== false ? 'active' : ''}}">
+                        <a href="{{ url('tv-view/engineer') }}" class="nav-link px-4">
+                            <span class="sidebar-text-contracted">E</span> <span class="sidebar-text">Engineer Tv</span>
+                        </a>
+                        </li>
+                        <li class="nav-item text-center {{strpos(request()->path(),'tv/contract') !== false ? 'active' : ''}}">
+                            <a href="{{ url('tv-view/contract') }}" class="nav-link px-4">
+                                <span class="sidebar-text-contracted">C</span> <span class="sidebar-text">Contract Tv</span>
+                            </a>
+                        </li>
+                        <li class="nav-item text-center {{strpos(request()->path(),'tv/assign') !== false ? 'active' : ''}}">
+                            <a href="{{ url('tv-view/assign') }}" class="nav-link px-4">
+                                <span class="sidebar-text-contracted">A</span> <span class="sidebar-text">Assign Tv</span>
+                            </a>
+                        </li>
+                   </ul>
+                </div>
             </li>
             <li role="separator" class="mt-4 mb-3 border-gray-700 dropdown-divider"></li>
             @if (auth()->user()->anyGmailLogin() === 0 || auth()->user()->gmail_login === 1)

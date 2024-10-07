@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->integer('is_login')->default(0)->nullable();
-            $table->integer('gmail_login')->default(0)->nullable();
+        Schema::create('engineer_job_types', function (Blueprint $table) {
+            $table->id();
+            $table->integer("engineer_id")->nullable();
+            $table->integer("job_type_id")->nullable();
+            $table->timestamps();
         });
     }
 
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('engineer_job_types');
     }
 };

@@ -139,6 +139,9 @@
                 <div class="nav-wrapper position-relative mb-2 px-4">
                     <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-text" role="tablist">
                         <li class="nav-item">
+                            <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-0-tab" data-bs-toggle="tab" href="#tabs-text-0" role="tab" aria-controls="tabs-text-1" aria-selected="false">Previous Active</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-bs-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Current Date</a>
                         </li>
                         <li class="nav-item">
@@ -154,6 +157,27 @@
                 <div class="card border-0">
                     <div class="card-body p-0">
                         <div class="tab-content" id="tabcontent1">
+                            <div class="tab-pane fade" id="tabs-text-0" role="tabpanel" aria-labelledby="tabs-text-0-tab">
+                                <table class="table table-flush" id="datatable0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th class="border-bottom fw-bolder" scope="col">CUSTOMER EMAIL</th>
+                                            <th class="border-bottom fw-bolder" scope="col">POSTCODE</th>
+                                            <th class="border-bottom fw-bolder" scope="col">ADDED BY</th>
+                                            <th class="border-bottom fw-bolder" scope="col">DATE</th>
+                                            <th class="border-bottom fw-bolder" scope="col">JOB INVOICE NUMBER</th>
+                                            <th class="border-bottom fw-bolder" scope="col">ENGINEER ASSIGNED</th>
+                                            <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
+                                            <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
+                                            <th class="border-bottom fw-bolder" scope="col">STATUS</th>
+                                            <th class="border-bottom fw-bolder" scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="job-tables-tbody">
+                                        @include('includes.mainDashboard', ['jobs' => $job])
+                                    </tbody>
+                                </table>
+                            </div>
                             <div class="tab-pane fade show active" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
                                 <table class="table table-flush" id="datatable1">
                                     <thead class="thead-light">
@@ -162,6 +186,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">POSTCODE</th>
                                             <th class="border-bottom fw-bolder" scope="col">ADDED BY</th>
                                             <th class="border-bottom fw-bolder" scope="col">DATE</th>
+                                            <th class="border-bottom fw-bolder" scope="col">JOB INVOICE NUMBER</th>
                                             <th class="border-bottom fw-bolder" scope="col">ENGINEER ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
@@ -182,6 +207,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">POSTCODE</th>
                                             <th class="border-bottom fw-bolder" scope="col">ADDED BY</th>
                                             <th class="border-bottom fw-bolder" scope="col">DATE</th>
+                                            <th class="border-bottom fw-bolder" scope="col">JOB INVOICE NUMBER</th>
                                             <th class="border-bottom fw-bolder" scope="col">ENGINEER ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
@@ -202,6 +228,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">POSTCODE</th>
                                             <th class="border-bottom fw-bolder" scope="col">ADDED BY</th>
                                             <th class="border-bottom fw-bolder" scope="col">DATE</th>
+                                            <th class="border-bottom fw-bolder" scope="col">JOB INVOICE NUMBER</th>
                                             <th class="border-bottom fw-bolder" scope="col">ENGINEER ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
@@ -254,6 +281,10 @@
 @section('body-scripts')
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script>
+        var dataTableEl0 = d.getElementById('datatable0');
+        var dataTable0 = new simpleDatatables.DataTable(dataTableEl0, {
+            perPage: 25, 
+        });
         var dataTableEl1 = d.getElementById('datatable1');
         var dataTable1 = new simpleDatatables.DataTable(dataTableEl1, {
             perPage: 25, 
@@ -266,86 +297,97 @@
         var dataTable3 = new simpleDatatables.DataTable(dataTableEl3, {
             perPage: 25, 
         });
-        var pageLoadTime = new Date().toISOString(); // ISO format for easy comparison
-
-        function getLatestData() {
-            $.ajax({
-                url: "{{ url('dashboard/latest_data') }}",
-                method: "GET",
-                data: {
-                    loaded_time: pageLoadTime
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        // Update the page with the latest data
-                        var data1 = response.data1;
-                        var data2 = response.data2;
-                        var data3 = response.data3;
-                        updatePage(data1, data2, data3);
-                    }
-                }
-            });
-        }
-        var interval = setInterval(getLatestData, 5 * 1000); // 5 seconds interval
-        getLatestData();
-        function updatePage(data1, data2, data3) {
-            dataTable.destroy();
-            $('#job-tables-tbody1').html(data1);
-            $('#job-tables-tbody2').html(data2);
-            $('#job-tables-tbody3').html(data3Date);
-            dataTable1 = new simpleDatatables.DataTable(dataTableEl1, {
-                perPage: 25, 
-            });
-            dataTable2 = new simpleDatatables.DataTable(dataTableEl2, {
-                perPage: 25, 
-            });
-            dataTable3 = new simpleDatatables.DataTable(dataTableEl3, {
-                perPage: 25, 
-            });
-        }
     </script>
-
-    @if (auth()->user()->anyGmailLogin() === 0 || auth()->user()->gmail_login === 1)
+    @if (strpos(request()->path(),'dashboard/assign') !== true)
         <script>
-            function getGmailData() {
+            var pageLoadTime = new Date().toISOString(); // ISO format for easy comparison
+
+            function getLatestData() {
                 $.ajax({
-                    url: "{{ route('gmail.login.check') }}",
+                    url: "{{ url('dashboard/latest_data') }}",
                     method: "GET",
+                    data: {
+                        loaded_time: pageLoadTime
+                    },
                     success: function (response) {
-                        if (response.status === 'data_updated') {
-                            getLatestData();
+                        if (response.status === 'success') {
+                            // Update the page with the latest data
+                            var data0 = response.data0;
+                            var data1 = response.data1;
+                            var data2 = response.data2;
+                            var data3 = response.data3;
+                            updatePage(data0, data1, data2, data3);
                         }
                     }
                 });
             }
-            var interval2 = setInterval(getGmailData, 5 * 1000); // 5 seconds interval
-            getGmailData();
+            var interval = setInterval(getLatestData, 5 * 1000); // 5 seconds interval
+            getLatestData();
+            function updatePage(data0, data1, data2, data3) {
+                dataTable0.destroy();
+                dataTable1.destroy();
+                dataTable2.destroy();
+                dataTable3.destroy();
+                $('#job-tables-tbody').html(data0);
+                $('#job-tables-tbody1').html(data1);
+                $('#job-tables-tbody2').html(data2);
+                $('#job-tables-tbody3').html(data3);
+                dataTable0 = new simpleDatatables.DataTable(dataTableEl0, {
+                    perPage: 25, 
+                });
+                dataTable1 = new simpleDatatables.DataTable(dataTableEl1, {
+                    perPage: 25, 
+                });
+                dataTable2 = new simpleDatatables.DataTable(dataTableEl2, {
+                    perPage: 25, 
+                });
+                dataTable3 = new simpleDatatables.DataTable(dataTableEl3, {
+                    perPage: 25, 
+                });
+            }
         </script>
-    @endif
 
-    <script>
-        function checkGmailError() {
-            $.ajax({
-                url: "{{ route('gmail.error.check') }}",
-                method: "GET",
-                success: function (response) {
-                    $("#gmail-error").removeClass("d-inline-block").addClass("d-none");
-                    if (response.status === 'no gmail login') {
-                        console.log("hello");
-                        $("#gmail-error").removeClass("d-none").addClass("d-inline-block");
-                    }
+        @if (auth()->user()->anyGmailLogin() === 0 || auth()->user()->gmail_login === 1)
+            <script>
+                function getGmailData() {
+                    $.ajax({
+                        url: "{{ route('gmail.login.check') }}",
+                        method: "GET",
+                        success: function (response) {
+                            if (response.status === 'data_updated') {
+                                getLatestData();
+                            }
+                        }
+                    });
                 }
-            });
-        }
-        var interval2 = setInterval(checkGmailError, 5 * 1000); // 5 seconds interval
-        checkGmailError();
-    </script>
+                var interval2 = setInterval(getGmailData, 5 * 1000); // 5 seconds interval
+                getGmailData();
+            </script>
+        @endif
 
-    @if(session('gmail_wrong'))
         <script>
-            var errorModal = new bootstrap.Modal(document.getElementById('gmailErrorModal'), {});
-            errorModal.show();
+            function checkGmailError() {
+                $.ajax({
+                    url: "{{ route('gmail.error.check') }}",
+                    method: "GET",
+                    success: function (response) {
+                        $("#gmail-error").removeClass("d-inline-block").addClass("d-none");
+                        if (response.status === 'no gmail login') {
+                            $("#gmail-error").removeClass("d-none").addClass("d-inline-block");
+                        }
+                    }
+                });
+            }
+            var interval2 = setInterval(checkGmailError, 5 * 1000); // 5 seconds interval
+            checkGmailError();
         </script>
+
+        @if(session('gmail_wrong'))
+            <script>
+                var errorModal = new bootstrap.Modal(document.getElementById('gmailErrorModal'), {});
+                errorModal.show();
+            </script>
+        @endif
     @endif
 @endsection
 

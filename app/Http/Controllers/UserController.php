@@ -7,7 +7,7 @@ use App\Models\ModuleModel;
 use App\Models\PermissionsModel;
 use App\Models\User;
 use App\Models\UserType;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Events\OnPasswordChange;
 class UserController extends Controller

@@ -9,7 +9,7 @@ class Job extends Model
 {
     use SoftDeletes;
     public $table = "jobs";
-    protected $fillable = ["customer_email","postcode","created_by", "added_by", "date", "engineer_id","agent_id","hand_overed_agent", "status"];
+    protected $fillable = ["customer_email","postcode","created_by", "added_by", "date", "engineer_id","agent_id", "job_invoice_no", "hand_overed_agent", "status"];
     
     public function engineer_user(){
         return $this->belongsTo(User::class,"engineer_id");
@@ -29,5 +29,20 @@ class Job extends Model
         }else{
             return $this->added_by;
         }
+    }
+    public function contract(){
+        return $this->hasOne(Contract::class,"job_id");
+    }
+    public function payment(){
+        return $this->hasOne(Payment::class,"job_id");
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($job) {
+            $job->contract()->delete();
+            $job->payment()->delete();
+        });
     }
 }

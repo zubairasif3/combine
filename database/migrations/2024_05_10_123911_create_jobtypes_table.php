@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('gmail_refresh_token')->nullable();
+        Schema::create('jobtypes', function (Blueprint $table) {
+            $table->id();
+            $table->string("title")->nullable();
+            $table->string("bgcolor")->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('jobtypes');
     }
 };

@@ -31,23 +31,7 @@
                             <div class="card border-0 shadow">
                                 <div class="table-responsive">
                                     <div id="job-tables-container">
-                                        <table class="table table-flush">
-                                            <thead class="thead-light">
-                                              <tr>
-                                                  <th class="border-bottom fw-bolder" scope="col">Customer Email</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Postcode</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Added By</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Date</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Engineer Assigned</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Agent Assigned</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Handed Over</th>
-                                                  <th class="border-bottom fw-bolder" scope="col">Status</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody id="job-tables-tbdoy">
-                                                @include('includes.tvDashbord', ['jobs' => $jobs])
-                                            </tbody>
-                                        </table>
+                                        @include('tv.data.contract', ['jobs' => $jobs])
                                     </div>
                                 </div>
                             </div>
@@ -57,14 +41,7 @@
               
             </div>
         </main>
-
-        <style>
-            .table-flush td {
-                padding-top: 4px;
-                padding-bottom: 4px;
-                font-size: 8px;
-            }
-        </style>
+        
 
         <script src="{{asset('vendor/%40popperjs/core/dist/umd/popper.min.js')}}"></script>
         <script src="{{asset('vendor/bootstrap/dist/js/bootstrap.min.js')}}"></script>
@@ -76,7 +53,7 @@
         <script src="{{ asset('vendor/vanillajs-datepicker/dist/js/datepicker.min.js') }}"></script>
         <script src="{{ asset('vendor/simple-datatables/dist/umd/simple-datatables.js') }}"></script>
         <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+        <script src="{{ asset('cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js') }}"></script>
         <script src="{{ asset('vendor/vanillajs-datepicker/dist/js/datepicker.min.js') }}"></script>
         <script src="{{ asset('vendor/fullcalendar/main.min.js') }}"></script>
         <script src="{{ asset('vendor/dropzone/dist/min/dropzone.min.js') }}"></script>
@@ -87,7 +64,7 @@
         <script src="{{ asset('vendor/svgmap/dist/svgMap.min.js') }}"></script>
         <script src="{{ asset('vendor/simplebar/dist/simplebar.min.js') }}"></script>
         <script src="{{ asset('vendor/sortablejs/Sortable.min.js') }}"></script>
-        <script async defer="defer" src="https://buttons.github.io/buttons.js"></script>
+        <script async defer="defer" src="{{ asset('buttons.github.io/buttons.js') }}"></script>
         <script src="{{ asset('assets/js/volt.js') }}"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
         <script>
@@ -95,7 +72,7 @@
         
             function getLatestData() {
                 $.ajax({
-                    url: "{{ url('tv_dashboard/latest_data') }}",
+                    url: "{{ url('tv_dashboard/contract_latest_data') }}",
                     method: "GET",
                     data: {
                         loaded_time: pageLoadTime
@@ -111,7 +88,7 @@
             var interval = setInterval(getLatestData, 30 * 1000); // 30 seconds interval
             getLatestData();
             function updatePage(data) {
-                $('#job-tables-tbdoy').html(data);
+                $('#job-tables-container').html(data);
             }
         </script>
 
