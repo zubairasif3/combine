@@ -54,7 +54,7 @@ class UserController extends Controller
             $jobtypes = JobType::all();
             return view("engineers.availability",compact('engineer','jobtypes'));
         }
-        
+
     }
     public function ContractDashboard()
     {
@@ -141,7 +141,7 @@ class UserController extends Controller
 
     public function processAuthRequest(Request $request)
     {
-        
+
         $data = $request->all();
         unset($data["_token"]);
         if(Auth::attempt($data))
@@ -160,7 +160,7 @@ class UserController extends Controller
         $client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
         $client->addScope('https://www.googleapis.com/auth/gmail.readonly');
         $client->setAccessType('offline');
-        $client->setPrompt('consent'); 
+        $client->setPrompt('consent');
         $authUrl = $client->createAuthUrl();
 
         return redirect()->away($authUrl);
@@ -175,9 +175,9 @@ class UserController extends Controller
 
         if ($request->has('code')) {
             $token = $client->fetchAccessTokenWithAuthCode($request->get('code'));
-            
+
             // restrict gmail must have agentspm247@gmail.com
-            $client->setAccessToken($token);  
+            $client->setAccessToken($token);
             $service = new Gmail($client);
             $userProfile = $service->users->getProfile('me');
             $userEmail = $userProfile->getEmailAddress();
@@ -199,7 +199,7 @@ class UserController extends Controller
                     return redirect('/')->with('gmail_error', 'Failed to get a refresh token.');
                 }
             }
-        
+
             $request->session()->put('gmail_token', $token);
             $updatedUser = User::find(auth()->user()->id);
             $updatedUser->gmail_login = 1;

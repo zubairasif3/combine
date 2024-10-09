@@ -539,7 +539,6 @@ class JobController extends Controller
 
         $changes = 0;
         foreach ($messages as $message) {
-            // echo $message['subject'] . "</br>";
             $changes += $this->assignMailGetter($message, $changes);
             $changes += $this->contractMailGetter($message, $changes);
         }
@@ -579,19 +578,60 @@ class JobController extends Controller
     }
     private function contractMailGetter($message, $changes){
         $subject = $message['subject'];
-        if (strpos($subject, "Bank Transfer Received") !== false) {
-            $body = $message['body'];
-            // $body = preg_replace('/\s+/', ' ', strip_tags($message['body']));
-            // $body = trim($body);
-            // if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]*)?(\d+)/', $body, $matches)) {
-            // if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]*)?(\d{5})([a-zA-Z0-9]+)(.{2})\s*$/m', $body, $matches)) {
-            if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]{2})+([a-zA-Z]*)?(\d{5})([a-zA-Z]{2})([a-zA-Z0-9]+)(.{3})\s*$/m', $body, $matches)) {
-                $invoice_number = $matches[4];
+        $body = preg_replace('/\s+/', ' ', strip_tags($message['body']));
+        $body = trim($body);
+        if (strpos($subject, "Contract") !== false && strpos($subject, "sent to") !== false) {
+            if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->contract == null){
+                    $this->ContractSent($job->id);
+                    $changes++;
+                }
+            }
+        } else if (strpos($subject, "Contract") !== false && strpos($subject, "has been signed by") !== false) {
+            if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->contract){
+                    $contract = $job->contract;
+                    if($contract->status !== 'received'){
+                        $this->ContractReceived($contract->id);
+                        $changes++;
+                    }
+                }
+            }
+        } else if (strpos($subject, "A new invoice was created for ") !== false) {
+            if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->payment == null){
+                    $this->PaymentSent($job->id);
+                    $changes++;
+                }
+            }
+        } else if (strpos($subject, "An invoice was paid by") !== false) {
+            if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
+                $email = $matches[2];
+                $job = Job::where('customer_email',$email)->latest()->first();
+                if($job && $job->payment){
+                    $payment = $job->payment;
+                    if($payment->status !== 'received'){
+                        $this->PaymentReceived($payment->id);
+                        $changes++;
+                    }
+                }
+            }
+        } else if (strpos($subject, "Bank Transfer Received") !== false) {
+            if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]{2})\d{5}([a-zA-Z]+)(\d{2})([a-zA-Z0-9]+)(.{2})\s*$/m', $body, $matches)) {
+                $invoice_number = $matches[3];
+                dd($matches);
                 $job = Job::where('job_invoice_no',$invoice_number)->latest()->first();
-                // if(!$job){
-                //     $postcode = $matches[6];
-                //     $job = Job::where('postcode', 'like' , '%' . $postcode . '%')->first();
-                // }
+                if(!$job){
+                    dd($matches);
+                    $postcode = $matches[5];
+                    // $job = Job:::whereRaw('REPLACE(postcode, " ", "") = ?', [str_replace(' ', '', $extractedPostcode)])->first();
+                }
                 if($job){
                     if($job->payment){
                         $payment = $job->payment;
@@ -607,84 +647,13 @@ class JobController extends Controller
                     }
                 }
             }
-        }else{
-            $body = preg_replace('/\s+/', ' ', strip_tags($message['body']));
-            $body = trim($body);
-            if (strpos($subject, "Contract") !== false && strpos($subject, "sent to") !== false) {
-                if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
-                    $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
-                    if($job && $job->contract == null){
-                        $this->ContractSent($job->id);
-                        $changes++;
-                    }
-                }
-            } else if (strpos($subject, "Contract") !== false && strpos($subject, "has been signed by") !== false) {
-                if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
-                    $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
-                    if($job && $job->contract){
-                        $contract = $job->contract;
-                        if($contract->status !== 'received'){
-                            $this->ContractReceived($contract->id);
-                            $changes++;
-                        }
-                    }
-                }
-            } else if (strpos($subject, "A new invoice was created for ") !== false) {
-                if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
-                    $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
-                    if($job && $job->payment == null){
-                        $this->PaymentSent($job->id);
-                        $changes++;
-                    }
-                }
-            } else if (strpos($subject, "An invoice was paid by") !== false) {
-                if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
-                    $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
-                    if($job && $job->payment){
-                        $payment = $job->payment;
-                        if($payment->status !== 'received'){
-                            $this->PaymentReceived($payment->id);
-                            $changes++;
-                        }
-                    }
-                }
-            } else if (strpos($subject, "VoltPayByLinkMail") !== false) {
-                $email = $message['toEmail'];
-                $job = Job::where('customer_email',$email)->latest()->first();
-                if($job && $job->payment == null){
-                    $this->PaymentSent($job->id);
-                    $changes++;
-                }
+        } else if (strpos($subject, "VoltPayByLinkMail") !== false) {
+            $email = $message['toEmail'];
+            $job = Job::where('customer_email',$email)->latest()->first();
+            if($job && $job->payment == null){
+                $this->PaymentSent($job->id);
+                $changes++;
             }
-            // previous bank tranfer mail
-            // } else if (strpos($subject, "Bank Transfer Received") !== false) {
-            //     if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]{2})\d{5}([a-zA-Z]+)(\d{2})([a-zA-Z0-9]+)(.{2})\s*$/m', $body, $matches)) {
-            //         $invoice_number = $matches[3];
-            //         $job = Job::where('job_invoice_no',$invoice_number)->latest()->first();
-            //         // if(!$job){
-            //             // dd($matches);
-            //         //     $postcode = $matches[5];
-            //         //     // $job = Job:::whereRaw('REPLACE(postcode, " ", "") = ?', [str_replace(' ', '', $extractedPostcode)])->first();
-            //         // }
-            //         if($job){
-            //             if($job->payment){
-            //                 $payment = $job->payment;
-            //                 if($payment->status !== 'received'){
-            //                     $this->PaymentReceived($payment->id);
-            //                     $changes++;
-            //                 }
-            //             }else{
-            //                 $payment = new Payment;
-            //                 $payment->job_id = $job->id;
-            //                 $payment->save();
-            //                 $this->PaymentReceived($payment->id);
-            //             }
-            //         }
-            //     }
         }
         return $changes;
     }
