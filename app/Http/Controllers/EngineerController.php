@@ -22,6 +22,59 @@ class EngineerController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function uploadCSV(Request $request)
+    {
+        // Validate the uploaded file
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048',
+        ]);
+
+        // Open the uploaded CSV file
+        $file = fopen($request->file('file'), 'r');
+
+        // Skip the header row (the first row)
+        $header = fgetcsv($file);
+
+        // Read each row of the CSV file
+        while ($row = fgetcsv($file)) {
+            // Get the data from the relevant columns
+            $email = $row[2]; // Assuming 'email' is in the 3rd column (index 2)
+            $phone = $row[5]; // Assuming 'phone' is in the 6th column (index 5)
+
+            // Check if a user with the same email exists
+            $user = User::where('email', $email)->first();
+
+            if ($user) {
+                // Update the phone number for existing user
+                $user->update(['phone' => $phone]);
+            } else {
+                // Insert new user if the email does not exist
+                User::create([
+                    'id' => $row[0], // Assuming 'id' is the first column
+                    'name' => $row[1], // Assuming 'name' is the second column
+                    'email' => $row[2], // Email column
+                    'email_verified_at' => $row[3], // Assuming email_verified_at is the 4th column
+                    'password' => $row[4], // Assuming password is in the 5th column
+                    'phone' => $row[5], // Phone column
+                    'show_password' => $row[6], // Assuming show_password is the 7th column
+                    'user_type_id' => $row[7], // Assuming user_type_id is the 8th column
+                    'username' => $row[8], // Assuming username is the 9th column
+                    'remember_token' => $row[9], // Assuming remember_token is the 10th column
+                    'created_at' => $row[10], // Assuming created_at is the 11th column
+                    'updated_at' => $row[11], // Assuming updated_at is the 12th column
+                    'is_login' => $row[12], // Assuming is_login is the 13th column
+                    'gmail_login' => $row[13], // Assuming gmail_login is the 14th column
+                    'gmail_refresh_token' => $row[14], // Assuming gmail_refresh_token is the 15th column
+                ]);
+            }
+        }
+
+        // Close the file
+        fclose($file);
+
+        // Redirect or return a success message
+       return 'CSV file processed successfully.';
+    }
     public function index()
     {
         //
@@ -77,7 +130,7 @@ class EngineerController extends Controller
                 $filteredEngineers = $filteredEngineers->where('rating', $rating);
             }
             $filteredEngineers = $filteredEngineers->sortBy('rating')->values();
-            
+
             $engineers = new Collection($filteredEngineers->all());
             foreach ($engineers as $key => $engineer) {
                 if ($engineer->lat !== null && $engineer->long !== null) {
@@ -131,7 +184,7 @@ class EngineerController extends Controller
             if ($request->monthAvailability) {
                 $availability->fill($data);
                 $availability->save();
-                for ($i=0; $i < 29; $i++) { 
+                for ($i=0; $i < 29; $i++) {
                     $data['date_start'] = Carbon::parse($data['date_start'])->addDay();
                     $availability = new EngineerAvailability();
                     $availability->fill($data);
