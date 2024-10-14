@@ -12,8 +12,9 @@
            <div class="row">
                <div class="col-12">
                     <div class="form-group mb-4">
-                        <label for="cartInputCompany1">Agent Name *</label> 
+                        <label for="cartInputCompany1">Agent Name *</label>
                         <select name="agent_id" id="agent_id" class="selectpicker form-select" data-live-search="true">
+                            <option selected disabled> Select Agent</option>
                             @foreach($agents as $agent)
                                 <option value="{{ $agent->id }}">{{ $agent->name }}</option>
                             @endforeach

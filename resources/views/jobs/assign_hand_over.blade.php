@@ -11,8 +11,9 @@
            <div class="row">
                <div class="col-12">
                     <div class="form-group mb-4">
-                        <label for="cartInputCompany1">Agent Name *</label> 
+                        <label for="cartInputCompany1">Agent Name *</label>
                         <select name="hand_overed_agent" id="hand_overed_agent" class="selectpicker form-select" data-live-search="true">
+                            <option selected disabled> Select Hand Over Agent</option>
                             @foreach($agents as $agent)
                                 <option value="{{ $agent->id }}">{{ $agent->name }}</option>
                             @endforeach

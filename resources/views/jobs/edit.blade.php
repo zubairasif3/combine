@@ -17,7 +17,7 @@
                <div class="form-group mb-4"><label for="cartInputEmail1">Postcode *</label> <input name="postcode" type="text" class="form-control" placeholder="NB ORE"  value="{{$job->postcode}}" required></div>
             </div>
             <div class="col-12 col-lg-6">
-               <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No *</label> <input name="job_invoice_no" type="number" class="form-control" placeholder="89701" value="{{$job->job_invoice_no}}" required></div>
+               <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No</label> <input name="job_invoice_no" type="number" class="form-control" placeholder="89701" value="{{$job->job_invoice_no}}"></div>
             </div>
             <div class="col-12 col-lg-6">
                <div class="form-group mb-4">
@@ -30,8 +30,9 @@
             </div>
             <div class="col-12 col-lg-6">
                <div class="form-group mb-4">
-                   <label for="cartInputCompany1">Engineer Name *</label> 
+                   <label for="cartInputCompany1">Engineer Name</label>
                    <select name="engineer_id" id="engineer_id" class="selectpicker form-select" data-live-search="true">
+                    <option selected disabled> Select Engineer</option>
                        @foreach($engineers as $engineer)
                            <option value="{{ $engineer->id }}" {{$job->engineer_id == $engineer->id ? 'selected' : ''}}>{{ $engineer->name }}</option>
                        @endforeach
@@ -40,8 +41,9 @@
             </div>
             <div class="col-12 col-lg-6">
                <div class="form-group mb-4">
-                   <label for="cartInputCompany1">Assign Agent *</label> 
+                   <label for="cartInputCompany1">Assign Agent</label>
                    <select name="agent_id" id="agent_id" class="selectpicker form-select" data-live-search="true">
+                        <option selected disabled> Select Agent</option>
                        @foreach($agents as $agent)
                            <option value="{{ $agent->id }}" {{$job->agent_id == $agent->id ? 'selected' : ''}}>{{ $agent->name }}</option>
                        @endforeach

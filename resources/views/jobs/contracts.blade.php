@@ -63,7 +63,7 @@
 
      <div class="card">
         <div class="table-responsive py-4">
-           <table class="table table-flush" id="datatable">
+           <table class="table table-flush" id="datatable0">
               <thead class="thead-light">
                   <tr>
                      <th class="border-bottom fw-bolder" scope="col">Engineer Name</th>
@@ -156,6 +156,17 @@
     }
 
 
+</script>
+
+@endsection
+
+@section('body-scripts')
+
+<script>
+    var dataTableEl0 = d.getElementById('datatable0');
+    var dataTable0 = new simpleDatatables.DataTable(dataTableEl0, {
+        perPage: 25,
+    });
 </script>
 
 @endsection

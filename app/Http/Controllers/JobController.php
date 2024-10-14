@@ -45,6 +45,9 @@ class JobController extends Controller
         $data['date'] = Carbon::today();
         $job->fill($data);
         $job->save();
+        $html = view("mails.jobcreated",compact('job'))->render();
+        // $this->InfoBipMail("info@pm247.co.uk",$html,"Contracts & Payments request made");
+        $this->InfoBipMail("nealmartinpm247@gmail.com",$html,"Contracts & Payments request made");
         return redirect("jobs")->with("success","Job Saved Successfully");
     }
 
@@ -127,7 +130,7 @@ class JobController extends Controller
             'engineer_id' => $request->input('engineer_id')
         ]);
 
-        return back()->with('success', 'Engineer assigned successfully.');
+        return redirect('/jobs')->with('success', 'Engineer assigned successfully.');
     }
 
     public function AssignAgent($id)
@@ -155,7 +158,7 @@ class JobController extends Controller
             $dataa = $this->messageBirdSMS($correctphone,$message);
             $this->InfoBipMail($job->engineer_user->email,$message,"Agent Assign");
         }
-        return redirect()->route('jobs.index')->with('success', 'Agent assigned successfully.');
+        return redirect('/jobs')->with('success', 'Agent assigned successfully.');
     }
 
     public function AssignHandover($id)
@@ -181,7 +184,7 @@ class JobController extends Controller
         // $correctphone = 44 . $correctphone;
         // $dataa = $this->messageBirdSMS($correctphone,$message);
         // $this->InfoBipMail($job->engineer_user->email,$message,"Agent Assign");
-        return redirect()->route('jobs.index')->with('success', 'Agent handover assigned successfully.');
+        return redirect('/jobs')->with('success', 'Agent handover assigned successfully.');
     }
 
     //  Accept Job
@@ -194,6 +197,10 @@ class JobController extends Controller
                     'job_invoice_no' => $request->job_invoice_no,
                     'contract_status' => '1'
                 ]);
+
+                $html = view("mails.jobcreated",compact('job'))->render();
+                // $this->InfoBipMail("info@pm247.co.uk",$html,"Contracts & Payments request made");
+                $this->InfoBipMail("nealmartinpm247@gmail.com",$html,"Contracts & Payments request made");
                 return redirect()->route('jobs.index')->with('success', 'Job Accept successfully.');
             }else{
                 return redirect()->route('jobs.index')->with('error', 'Job is not found.');
