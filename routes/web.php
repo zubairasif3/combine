@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function() {
         Route::post('assign_agent/{id}',[JobController::class, 'AssignAgentPost'])->name('job.assign_agent.post');
         Route::get('assign_hand_over/{id}',[JobController::class, 'AssignHandover'])->name('job.assign_hand_over');
         Route::post('assign_hand_over/{id}',[JobController::class, 'AssignHandoverPost'])->name('job.assign_hand_over.post');
+        Route::post('accept/{id}',[JobController::class, 'AcceptJob'])->name('job.accept');
+        Route::get('reject/{id}',[JobController::class, 'RejectJob'])->name('job.reject');
     });
     // contract & payment route
     Route::get("contracts",[JobController::class,"Contracts"]);

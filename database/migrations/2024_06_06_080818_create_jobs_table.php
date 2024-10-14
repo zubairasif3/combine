@@ -18,11 +18,12 @@ return new class extends Migration
             $table->integer("created_by")->nullable();
             $table->string("job_invoice_no")->nullable();
             $table->string("added_by")->nullable();
+            $table->enum('contract_status', ['0' ,'1', '2'])->default('0');
             $table->date("date")->nullable();
             $table->integer("engineer_id")->nullable();
             $table->integer("agent_id")->nullable();
             $table->integer("hand_overed_agent")->nullable();
-            $table->enum('status', ['Active', 'Completed'])->default('active')->nullable();
+            $table->enum('status', ['Active', 'Completed'])->default('Active')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

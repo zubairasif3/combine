@@ -10,29 +10,29 @@
                 border-radius: 30px;
             }
             .modal#gmailErrorModal .modal-content svg {
-                width: 100px; 
-                display: block; 
+                width: 100px;
+                display: block;
                 margin: 0 auto;
             }
             .modal#gmailErrorModal .modal-content .path {
-                stroke-dasharray: 1000; 
+                stroke-dasharray: 1000;
                 stroke-dashoffset: 0;
             }
             .modal#gmailErrorModal .modal-content .path.circle {
-                -webkit-animation: dash 0.9s ease-in-out; 
+                -webkit-animation: dash 0.9s ease-in-out;
                 animation: dash 0.9s ease-in-out;
             }
             .modal#gmailErrorModal .modal-content .path.line {
-                stroke-dashoffset: 1000; 
-                -webkit-animation: dash 0.95s 0.35s ease-in-out forwards; 
+                stroke-dashoffset: 1000;
+                -webkit-animation: dash 0.95s 0.35s ease-in-out forwards;
                 animation: dash 0.95s 0.35s ease-in-out forwards;
             }
             .modal#gmailErrorModal .modal-content .path.check {
-                stroke-dashoffset: -100; 
-                -webkit-animation: dash-check 0.95s 0.35s ease-in-out forwards; 
+                stroke-dashoffset: -100;
+                -webkit-animation: dash-check 0.95s 0.35s ease-in-out forwards;
                 animation: dash-check 0.95s 0.35s ease-in-out forwards;
             }
-            @-webkit-keyframes dash { 
+            @-webkit-keyframes dash {
                 0% {
                     stroke-dashoffset: 1000;
                 }
@@ -40,7 +40,7 @@
                     stroke-dashoffset: 0;
                 }
             }
-            @keyframes dash { 
+            @keyframes dash {
                 0% {
                     stroke-dashoffset: 1000;
                 }
@@ -48,7 +48,7 @@
                     stroke-dashoffset: 0;
                 }
             }
-            @-webkit-keyframes dash { 
+            @-webkit-keyframes dash {
                 0% {
                     stroke-dashoffset: 1000;
                 }
@@ -56,14 +56,14 @@
                     stroke-dashoffset: 0;
                 }
             }
-            @keyframes dash { 
+            @keyframes dash {
                 0% {
                     stroke-dashoffset: 1000;}
                 100% {
                     stroke-dashoffset: 0;
                 }
             }
-            @-webkit-keyframes dash-check { 
+            @-webkit-keyframes dash-check {
                 0% {
                     stroke-dashoffset: -100;
                 }
@@ -84,33 +84,53 @@
 @endif
 @section("content")
 
- <!-- Delete Modal Start  -->
- <div class="modal fade" id="modal-notification" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
-    <div class="modal-dialog modal-info modal-dialog-centered" role="document">
-       <div class="modal-content bg-gradient-danger">
-          <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
-          <div class="modal-header">
+    <!-- Accept Modal Start  -->
+        <div class="modal fade" id="modal-accept" tabindex="-1" role="dialog" aria-labelledby="modal-accept" aria-hidden="true">
+            <div class="modal-dialog modal-info modal-dialog-centered" role="document">
+            <div class="modal-content bg-gray-200">
+                <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header">
+                    <h2 class="h4 modal-title">Accept Job!</h2>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="acceptForm" action="">
+                        @csrf
+                        <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No *</label> <input name="job_invoice_no" type="number" class="form-control" placeholder="89701"   required></div>
 
-          </div>
-          <div class="modal-body text-white">
-             <div class="py-3 text-center">
-                <span class="modal-icon">
-                   <svg class="icon icon-xl text-gray-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
-                </span>
-                <h2 class="h4 modal-title my-3">Important message!</h2>
-                <p>Do you know to delete this Job ?</p>
-             </div>
-          </div>
-            <form method="post" id="deleteForm" action="">
-                @csrf
-                <input type="hidden" name="_method" value="delete">
-                <div class="modal-footer"><button type="submit" class="btn btn-sm btn-white">Yes</button></div>
-            </form>
-       </div>
-    </div>
- </div>
+                        <div class="modal-footer"><button type="submit" class="btn btn-sm btn-gray-800 m-0">Accept</button></div>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    <!-- Accept Modal End  -->
+    <!-- Delete Modal Start  -->
+        <div class="modal fade" id="modal-notification" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
+            <div class="modal-dialog modal-info modal-dialog-centered" role="document">
+            <div class="modal-content bg-gradient-danger">
+                <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header">
+
+                </div>
+                <div class="modal-body text-white">
+                    <div class="py-3 text-center">
+                        <span class="modal-icon">
+                        <svg class="icon icon-xl text-gray-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        </span>
+                        <h2 class="h4 modal-title my-3">Important message!</h2>
+                        <p>Do you know to delete this Job ?</p>
+                    </div>
+                </div>
+                    <form method="post" id="deleteForm" action="">
+                        @csrf
+                        <input type="hidden" name="_method" value="delete">
+                        <div class="modal-footer"><button type="submit" class="btn btn-sm btn-white">Yes</button></div>
+                    </form>
+            </div>
+            </div>
+        </div>
     <!-- Delete Modal End  -->
     <div class="pb-4">
         <div class="py-4">
@@ -170,6 +190,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
                                             <th class="border-bottom fw-bolder" scope="col">STATUS</th>
+                                            <th class="border-bottom fw-bolder" scope="col">Contract Status</th>
                                             <th class="border-bottom fw-bolder" scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -191,6 +212,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
                                             <th class="border-bottom fw-bolder" scope="col">STATUS</th>
+                                            <th class="border-bottom fw-bolder" scope="col">Contract Status</th>
                                             <th class="border-bottom fw-bolder" scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -212,6 +234,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
                                             <th class="border-bottom fw-bolder" scope="col">STATUS</th>
+                                            <th class="border-bottom fw-bolder" scope="col">Contract Status</th>
                                             <th class="border-bottom fw-bolder" scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -233,6 +256,7 @@
                                             <th class="border-bottom fw-bolder" scope="col">Agent ASSIGNED</th>
                                             <th class="border-bottom fw-bolder" scope="col">HANDED OVER</th>
                                             <th class="border-bottom fw-bolder" scope="col">STATUS</th>
+                                            <th class="border-bottom fw-bolder" scope="col">Contract Status</th>
                                             <th class="border-bottom fw-bolder" scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -247,31 +271,34 @@
                 <!-- End of Tab Content -->
             </div>
         </div>
-        
+
         @if('gmail_wrong')
-            <div class="modal fade" id="gmailErrorModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false"> 
-                <div class="modal-dialog modal-dialog-centered" role="document"> 
-                    <div class="modal-content"> 
-                        <div class="modal-body text-center p-lg-4"> 
+            <div class="modal fade" id="gmailErrorModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body text-center p-lg-4">
                             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
-                                <circle class="path circle" fill="none" stroke="#db3646" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1" /> 
+                                <circle class="path circle" fill="none" stroke="#db3646" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1" />
                                 <line class="path line" fill="none" stroke="#db3646" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3" />
-                                <line class="path line" fill="none" stroke="#db3646" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" X2="34.4" y2="92.2" /> 
-                            </svg> 
-                            <h4 class="text-danger mt-3">Gmail is wrong!</h4> 
+                                <line class="path line" fill="none" stroke="#db3646" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" x1="95.8" y1="38" X2="34.4" y2="92.2" />
+                            </svg>
+                            <h4 class="text-danger mt-3">Gmail is wrong!</h4>
                             <p class="mt-3">{{ session('gmail_wrong') }}</p>
-                            <button type="button" class="btn btn-sm mt-3 btn-danger" data-bs-dismiss="modal">Ok</button> 
-                        </div> 
-                    </div> 
-                </div> 
+                            <button type="button" class="btn btn-sm mt-3 btn-danger" data-bs-dismiss="modal">Ok</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
     </div>
     <script>
         function executeRemove(id){
-        document.getElementById("deleteForm").setAttribute("action",`{{url('jobs/${id}')}}`);
+            document.getElementById("deleteForm").setAttribute("action",`{{url('jobs/${id}')}}`);
         }
 
+        function executeAccept(id){
+            document.getElementById("acceptForm").setAttribute("action",`{{url('jobs/accept/${id}')}}`);
+        }
 
     </script>
 
@@ -283,22 +310,23 @@
     <script>
         var dataTableEl0 = d.getElementById('datatable0');
         var dataTable0 = new simpleDatatables.DataTable(dataTableEl0, {
-            perPage: 25, 
+            perPage: 25,
         });
         var dataTableEl1 = d.getElementById('datatable1');
         var dataTable1 = new simpleDatatables.DataTable(dataTableEl1, {
-            perPage: 25, 
+            perPage: 25,
         });
         var dataTableEl2 = d.getElementById('datatable2');
         var dataTable2 = new simpleDatatables.DataTable(dataTableEl2, {
-            perPage: 25, 
+            perPage: 25,
         });
         var dataTableEl3 = d.getElementById('datatable3');
         var dataTable3 = new simpleDatatables.DataTable(dataTableEl3, {
-            perPage: 25, 
+            perPage: 25,
         });
     </script>
-    @if (strpos(request()->path(),'dashboard/assign') !== true)
+    {{-- @if (strpos(request()->path(),'dashboard/assign') !== true) --}}
+    @if (strpos(request()->path(),'dashboard/assign') === 0)
         <script>
             var pageLoadTime = new Date().toISOString(); // ISO format for easy comparison
 
@@ -333,16 +361,16 @@
                 $('#job-tables-tbody2').html(data2);
                 $('#job-tables-tbody3').html(data3);
                 dataTable0 = new simpleDatatables.DataTable(dataTableEl0, {
-                    perPage: 25, 
+                    perPage: 25,
                 });
                 dataTable1 = new simpleDatatables.DataTable(dataTableEl1, {
-                    perPage: 25, 
+                    perPage: 25,
                 });
                 dataTable2 = new simpleDatatables.DataTable(dataTableEl2, {
-                    perPage: 25, 
+                    perPage: 25,
                 });
                 dataTable3 = new simpleDatatables.DataTable(dataTableEl3, {
-                    perPage: 25, 
+                    perPage: 25,
                 });
             }
         </script>

@@ -9,8 +9,8 @@ class Job extends Model
 {
     use SoftDeletes;
     public $table = "jobs";
-    protected $fillable = ["customer_email","postcode","created_by", "added_by", "date", "engineer_id","agent_id", "job_invoice_no", "hand_overed_agent", "status"];
-    
+    protected $fillable = ["customer_email","postcode","created_by", "added_by", "date", "engineer_id","agent_id", "job_invoice_no", "hand_overed_agent", "status", "contract_status"];
+
     public function engineer_user(){
         return $this->belongsTo(User::class,"engineer_id");
     }

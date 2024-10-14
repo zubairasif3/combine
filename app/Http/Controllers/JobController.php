@@ -184,6 +184,38 @@ class JobController extends Controller
         return redirect()->route('jobs.index')->with('success', 'Agent handover assigned successfully.');
     }
 
+    //  Accept Job
+    public function AcceptJob(Request $request,$id)
+    {
+        if($request->job_invoice_no){
+            $job = Job::find($id);
+            if($job){
+                $job->update([
+                    'job_invoice_no' => $request->job_invoice_no,
+                    'contract_status' => '1'
+                ]);
+                return redirect()->route('jobs.index')->with('success', 'Job Accept successfully.');
+            }else{
+                return redirect()->route('jobs.index')->with('error', 'Job is not found.');
+            }
+        }else{
+            return redirect()->route('jobs.index')->with('error', 'Job Invoice No is required.');
+        }
+    }
+    //  Reject Job
+    public function RejectJob($id)
+    {
+        $job = Job::find($id);
+        if($job){
+            $job->update([
+                'contract_status' => '2'
+            ]);
+            return redirect()->route('jobs.index')->with('success', 'Job Reject successfully.');
+        }else{
+            return redirect()->route('jobs.index')->with('error', 'Job is not found.');
+        }
+    }
+
 
     // Check latest Data Ajax function
     public function latestData(Request $request)
@@ -238,7 +270,7 @@ class JobController extends Controller
     // Contracts Functions
     public function Contracts()
     {
-        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '!=', '2')->latest()->get();
         return view("jobs/contracts",compact('jobs'));
     }
     public function ContractSent($id)
@@ -277,7 +309,7 @@ class JobController extends Controller
     public function Payments()
     {
 
-        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '!=', '2')->latest()->get();
 
         return view("jobs/payments",compact('jobs'));
     }
@@ -587,7 +619,7 @@ class JobController extends Controller
             // if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]*)?(\d{5})([a-zA-Z0-9]+)(.{2})\s*$/m', $body, $matches)) {
             if (preg_match('/Payment from\s+([a-zA-Z\s]+)\s+([a-zA-Z]{2})+([a-zA-Z]*)?(\d{5})([a-zA-Z]{2})([a-zA-Z0-9]+)(.{3})\s*$/m', $body, $matches)) {
                 $invoice_number = $matches[4];
-                $job = Job::where('job_invoice_no',$invoice_number)->latest()->first();
+                $job = Job::where('job_invoice_no',$invoice_number)->where('contract_status', '!=', '2')->latest()->first();
                 // if(!$job){
                 //     $postcode = $matches[6];
                 //     $job = Job::where('postcode', 'like' , '%' . $postcode . '%')->first();
@@ -613,7 +645,7 @@ class JobController extends Controller
             if (strpos($subject, "Contract") !== false && strpos($subject, "sent to") !== false) {
                 if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
                     $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
+                    $job = Job::where('customer_email',$email)->where('contract_status', '!=', '2')->latest()->first();
                     if($job && $job->contract == null){
                         $this->ContractSent($job->id);
                         $changes++;
@@ -622,7 +654,7 @@ class JobController extends Controller
             } else if (strpos($subject, "Contract") !== false && strpos($subject, "has been signed by") !== false) {
                 if (preg_match('/Recipient\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
                     $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
+                    $job = Job::where('customer_email',$email)->where('contract_status', '!=', '2')->latest()->first();
                     if($job && $job->contract){
                         $contract = $job->contract;
                         if($contract->status !== 'received'){
@@ -634,7 +666,7 @@ class JobController extends Controller
             } else if (strpos($subject, "A new invoice was created for ") !== false) {
                 if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
                     $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
+                    $job = Job::where('customer_email',$email)->where('contract_status', '!=', '2')->latest()->first();
                     if($job && $job->payment == null){
                         $this->PaymentSent($job->id);
                         $changes++;
@@ -643,7 +675,7 @@ class JobController extends Controller
             } else if (strpos($subject, "An invoice was paid by") !== false) {
                 if (preg_match('/Customer\s*(.*?)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/', $body, $matches)) {
                     $email = $matches[2];
-                    $job = Job::where('customer_email',$email)->latest()->first();
+                    $job = Job::where('customer_email',$email)->where('contract_status', '!=', '2')->latest()->first();
                     if($job && $job->payment){
                         $payment = $job->payment;
                         if($payment->status !== 'received'){
@@ -654,7 +686,7 @@ class JobController extends Controller
                 }
             } else if (strpos($subject, "VoltPayByLinkMail") !== false) {
                 $email = $message['toEmail'];
-                $job = Job::where('customer_email',$email)->latest()->first();
+                $job = Job::where('customer_email',$email)->where('contract_status', '!=', '2')->latest()->first();
                 if($job && $job->payment == null){
                     $this->PaymentSent($job->id);
                     $changes++;
