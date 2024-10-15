@@ -47,7 +47,7 @@ class JobController extends Controller
         $job->save();
         $html = view("mails.jobcreated",compact('job'))->render();
         // $this->InfoBipMail("info@pm247.co.uk",$html,"Contracts & Payments request made");
-        $this->InfoBipMail("nealmartinpm247@gmail.com",$html,"Contracts & Payments request made");
+        // $this->InfoBipMail("nealmartinpm247@gmail.com",$html,"Contracts & Payments request made");
         return redirect("jobs")->with("success","Job Saved Successfully");
     }
 
@@ -91,7 +91,7 @@ class JobController extends Controller
                 }
                 $correctphone = 44 . $correctphone;
                 $dataa = $this->messageBirdSMS($correctphone,$message);
-                $this->InfoBipMail($job->engineer_user->email,$message,"Agent Assign");
+                // $this->InfoBipMail($job->engineer_user->email,$message,"Agent Assign");
             }
         }
         return redirect("jobs")->with("success","Job Updated Successfully");
@@ -156,7 +156,7 @@ class JobController extends Controller
             }
             $correctphone = 44 . $correctphone;
             $dataa = $this->messageBirdSMS($correctphone,$message);
-            $this->InfoBipMail($job->engineer_user->email,$message,"Agent Assign");
+            // $this->InfoBipMail($job->engineer_user->email,$message,"Agent Assign");
         }
         return redirect('/jobs')->with('success', 'Agent assigned successfully.');
     }
@@ -200,7 +200,7 @@ class JobController extends Controller
 
                 $html = view("mails.jobcreated",compact('job'))->render();
                 // $this->InfoBipMail("info@pm247.co.uk",$html,"Contracts & Payments request made");
-                $this->InfoBipMail("nealmartinpm247@gmail.com",$html,"Contracts & Payments request made");
+                // $this->InfoBipMail("nealmartinpm247@gmail.com",$html,"Contracts & Payments request made");
                 return redirect()->route('jobs.index')->with('success', 'Job Accept successfully.');
             }else{
                 return redirect()->route('jobs.index')->with('error', 'Job is not found.');
@@ -277,7 +277,7 @@ class JobController extends Controller
     // Contracts Functions
     public function Contracts()
     {
-        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '!=', '2')->latest()->get();
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '1')->latest()->get();
         return view("jobs/contracts",compact('jobs'));
     }
     public function ContractSent($id)
@@ -297,7 +297,7 @@ class JobController extends Controller
         $contract->received_time = Carbon::now();
         if ($contract->job->engineer_user) {
             $html = view("mails.contractSign",compact('contract'))->render();
-            $this->InfoBipMail($contract->job->engineer_user->email,$html,"Contract has been signed");
+            // $this->InfoBipMail($contract->job->engineer_user->email,$html,"Contract has been signed");
             $message = "Dear ".$contract->job->engineer_user->name.", The contract has been signed for the Job at ".$contract->job->postcode.". Please only proceed when payment has also been confirmed as paid. You will be informed once payment is received by email and sms.";
             $correctphone = $contract->job->engineer_user->phone;
             if (substr($correctphone, 0, 1) === '0') {
@@ -316,7 +316,7 @@ class JobController extends Controller
     public function Payments()
     {
 
-        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '!=', '2')->latest()->get();
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '1')->latest()->get();
 
         return view("jobs/payments",compact('jobs'));
     }
@@ -337,7 +337,7 @@ class JobController extends Controller
         $payment->received_time = Carbon::now();
         if ($payment->job->engineer_user) {
             $html = view("mails.paymentSign",compact('payment'))->render();
-            $this->InfoBipMail($payment->job->engineer_user->email,$html,"Payment has been Received");
+            // $this->InfoBipMail($payment->job->engineer_user->email,$html,"Payment has been Received");
             $message = "Dear ".$payment->job->engineer_user->name.", The Payment has been received for the Job at ".$payment->job->postcode.". Please only proceed when contract has also been confirmed as paid. You will be informed once the contract is received by email and sms";
             $correctphone = $payment->job->engineer_user->phone;
             if (substr($correctphone, 0, 1) === '0') {
@@ -386,7 +386,7 @@ class JobController extends Controller
         $payment = Payment::where('created_at', '>', $loadedTime)->orWhere('updated_at', '>', $loadedTime)->first();
 
         if ($job || $contract || $payment) {
-            $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+            $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '1')->latest()->get();
             $html = view('tv.data.contract', ['jobs' => $jobs])->render();
             return response()->json([
                 'status' => 'success',

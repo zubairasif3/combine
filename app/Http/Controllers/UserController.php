@@ -130,7 +130,7 @@ class UserController extends Controller
             $data['password'] = $user['show_password'];
         }
         $html = view("mails.editUser",compact('data'))->render();
-        $this->InfoBipMail($data["email"],$html,"Welcome Pm247");
+        // $this->InfoBipMail($data["email"],$html,"Welcome Pm247");
         return redirect("users")->with("success","User Updated Successfully");
     }
 

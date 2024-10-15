@@ -2,26 +2,6 @@
 @section("content")
 
 
-<!-- Accept Modal Start  -->
-    <div class="modal fade" id="modal-accept" tabindex="-1" role="dialog" aria-labelledby="modal-accept" aria-hidden="true">
-        <div class="modal-dialog modal-info modal-dialog-centered" role="document">
-        <div class="modal-content bg-gray-200">
-            <button type="button" class="btn-close theme-settings-close fs-6 ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
-            <div class="modal-header">
-                <h2 class="h4 modal-title">Accept Job!</h2>
-            </div>
-            <div class="modal-body">
-                <form method="post" id="acceptForm" action="">
-                    @csrf
-                    <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No *</label> <input name="job_invoice_no" type="number" class="form-control" placeholder="89701"   required></div>
-
-                    <div class="modal-footer"><button type="submit" class="btn btn-sm btn-gray-800 m-0">Accept</button></div>
-                </form>
-            </div>
-        </div>
-        </div>
-    </div>
-<!-- Accept Modal End  -->
  <!-- Delete Modal Start  -->
  <div class="modal fade" id="modal-notification" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
     <div class="modal-dialog modal-info modal-dialog-centered" role="document">
@@ -95,14 +75,10 @@
                         <td class=" text-gray-900">{{$job->contract->received_time}}</td>
                         <td class=" text-gray-900">{{$job->contract->inform_time}}</td>
                         <td class=" text-gray-900">
-                            @if ($job->contract_status != '0')
-                                <span class="badge super-badge bg-{{$job->contract_status === '1' ? 'success' : 'danger'}} ms-1">{{$job->contract_status === '1' ? 'Accepted' : 'Rejected'}}</span>
-                            @else
-                                <button onclick="executeAccept({{$job->id}})" href="button" class="btn btn btn-outline-success action-btn d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-accept">Accept</button>
-                                <a href="{{ route('job.reject', $job->id)}}" class="btn btn btn-outline-danger action-btn d-inline-flex align-items-center" >
-                                    Reject
-                                </a>
-                            @endif
+                            <span class="badge super-badge bg-{{$job->contract_status === '1' ? 'success' : 'danger'}} ms-1">{{$job->contract_status === '1' ? 'Accepted' : 'Rejected'}}</span>
+                            <a href="{{ route('job.reject', $job->id)}}" class="btn btn btn-outline-danger action-btn d-inline-flex align-items-center" >
+                                Reject
+                            </a>
                         </td>
                         <td>
                            @if ($job->contract->status == "sent")
@@ -116,14 +92,10 @@
                      @else
                         <td colspan="5"></td>
                         <td class=" text-gray-900">
-                            @if ($job->contract_status != '0')
-                                <span class="badge super-badge bg-{{$job->contract_status === '0' ? 'success' : 'danger'}} ms-1">{{$job->contract_status === '0' ? 'Accepted' : 'Rejected'}}</span>
-                            @else
-                                <button onclick="executeAccept({{$job->id}})" href="button" class="btn btn btn-outline-success action-btn d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-accept">Accept</button>
-                                <a href="{{ route('job.reject', $job->id)}}" class="btn btn btn-outline-danger action-btn d-inline-flex align-items-center" >
-                                    Reject
-                                </a>
-                            @endif
+                            <span class="badge super-badge bg-{{$job->contract_status === '1' ? 'success' : 'danger'}} ms-1">{{$job->contract_status === '1' ? 'Accepted' : 'Rejected'}}</span>
+                            <a href="{{ route('job.reject', $job->id)}}" class="btn btn btn-outline-danger action-btn d-inline-flex align-items-center" >
+                                Reject
+                            </a>
                         </td>
                         <td>
                            <a href="{{url('contracts/sent').'/'.$job->id}}" class="btn btn-outline-success action-btn d-inline-flex align-items-center">
@@ -150,12 +122,6 @@
     function executeRemove(id){
        document.getElementById("deleteForm").setAttribute("action",`{{url('jobs/${id}')}}`);
     }
-
-    function executeAccept(id){
-        document.getElementById("acceptForm").setAttribute("action",`{{url('jobs/accept/${id}')}}`);
-    }
-
-
 </script>
 
 @endsection

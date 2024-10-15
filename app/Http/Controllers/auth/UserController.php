@@ -120,7 +120,7 @@ class UserController extends Controller
         return $availableEngineer;
     }
     public function ContractTv(Request $request){
-        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->latest()->get();
+        $jobs = Job::where('created_at', '>=', Carbon::now()->subDays(7))->where('contract_status', '1')->latest()->get();
         return view("tv.contract",compact('jobs'));
     }
     public function AssignTv(Request $request){

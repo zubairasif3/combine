@@ -23,9 +23,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get("available_engineer_after_interval",[UserController::class,"getAvailableEngineers"]);
 
-Route::get("test-bip-emai",function(){
-    InfoBipModel::SendEmail("rehan5383@gmail.com","<h1>Hello world</h1>","Test Email");
-});
+// Route::get("test-bip-emai",function(){
+//     InfoBipModel::SendEmail("rehan5383@gmail.com","<h1>Hello world</h1>","Test Email");
+// });
 
 Route::group(["prefix" => "/engineers"],function(){
     Route::get("/getJobTypes",[EngineerController::class,"AllJopTypes"]);

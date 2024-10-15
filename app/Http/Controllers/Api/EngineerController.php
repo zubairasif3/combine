@@ -149,9 +149,9 @@ class EngineerController extends Controller
         $availability->fill($data);
         $availability->save();
         if ($request->monthAvailability > 0) {
-            $allAvailabilities = array(); 
+            $allAvailabilities = array();
             array_push($allAvailabilities, $availability);
-            for ($i=0; $i < 29; $i++) { 
+            for ($i=0; $i < 29; $i++) {
                 $data['date_start'] = Carbon::parse($data['date_start'])->addDay();
                 $availability = new EngineerAvailability();
                 $availability->fill($data);
@@ -159,7 +159,7 @@ class EngineerController extends Controller
                 array_push($allAvailabilities, $availability);
             }
         }else{
-            $allAvailabilities = $availability; 
+            $allAvailabilities = $availability;
         }
 
         return response()->json(["status" => "success", "data" => $allAvailabilities, "message" => "Engineer Availability Added Successfully."], 200);
@@ -210,7 +210,7 @@ class EngineerController extends Controller
         return response()->json(["status" => "success",  "message" => "Availability deleted successfully."], 200);
     }
 
-    
+
     public function AddLatLong(Request $request)
     {
         // Validate the request
@@ -252,7 +252,7 @@ class EngineerController extends Controller
             foreach($engineer->jobTypes as $type){
                 $type->delete();
             }
-    
+
             foreach($engineer->availability as $available){
                 $available->delete();
             }
@@ -398,7 +398,7 @@ class EngineerController extends Controller
         $hashEmail = md5($user->email);
         $reset_link = url('reset-password/' . $hashEmail);
         $html = view("mails.forgetPassword",compact('user','reset_link'))->render();
-        InfoBipModel::SendEmail($user->email,$html,"Forget Password");
+        // InfoBipModel::SendEmail($user->email,$html,"Forget Password");
         ob_end_clean();
         return response()->json([
             "status" => "success",

@@ -13,8 +13,15 @@
         <td class=" text-gray-900">
             @if ($job->contract_status != '0')
                 <span class="badge super-badge bg-{{$job->contract_status === '1' ? 'success' : 'danger'}} ms-1">{{$job->contract_status === '1' ? 'Accepted' : 'Rejected'}}</span>
+                @if($job->contract_status === '1')
+                    <a href="{{ route('job.reject', $job->id)}}" class="btn btn btn-outline-danger action-btn d-inline-flex align-items-center" >
+                        Reject
+                    </a>
+                @else
+                    <button onclick="executeAccept({{$job->id}}, {{$job->job_invoice_no}})" href="button" class="btn btn btn-outline-success action-btn d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-accept">Accept</button>
+                @endif
             @else
-                <button onclick="executeAccept({{$job->id}})" href="button" class="btn btn btn-outline-success action-btn d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-accept">Accept</button>
+                <button onclick="executeAccept({{$job->id}}, {{$job->job_invoice_no}})" href="button" class="btn btn btn-outline-success action-btn d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#modal-accept">Accept</button>
                 <a href="{{ route('job.reject', $job->id)}}" class="btn btn btn-outline-danger action-btn d-inline-flex align-items-center" >
                     Reject
                 </a>

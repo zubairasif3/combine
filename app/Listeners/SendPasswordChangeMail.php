@@ -27,6 +27,6 @@ class SendPasswordChangeMail
         $data = $event->data;
         //Mail::to($data["email"])->send(new PasswordChangeEmail($data));
         $html = view("mails.passwordChanged",compact('data'))->render();
-        InfoBipModel::SendEmail($data["email"],$html,"Your password has been changed");
+        // InfoBipModel::SendEmail($data["email"],$html,"Your password has been changed");
     }
 }

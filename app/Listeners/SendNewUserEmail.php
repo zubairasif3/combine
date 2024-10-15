@@ -26,6 +26,6 @@ class SendNewUserEmail
        // Mail::to($data["email"])->send(new NewUserWelcomeEmail($data));
        $html = view("mails.welcome",compact('data'))->render();
     //    InfoBipModel::SendEmail($data["email"],$html,"Welcome Pm247");
-       InfoBipModel::SendEmail($data["email"],$html,"Agent Assigned");
+    //    InfoBipModel::SendEmail($data["email"],$html,"Agent Assigned");
     }
 }

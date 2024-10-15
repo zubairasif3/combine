@@ -30,10 +30,10 @@ class Controller extends BaseController
     // infobipMail
     public function InfoBipMail($email,$html,$subject)
     {
-        return InfoBipModel::SendEmail($email,$html,$subject);
+        // return InfoBipModel::SendEmail($email,$html,$subject);
     }
-    
-    
+
+
     public function postcodeDistance($postcode1, $postcode2)
     {
         $distance = $this->distanceService->getDistance($postcode1, $postcode2);

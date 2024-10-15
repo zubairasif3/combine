@@ -95,7 +95,7 @@
                 <div class="modal-body">
                     <form method="post" id="acceptForm" action="">
                         @csrf
-                        <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No *</label> <input name="job_invoice_no" type="number" class="form-control" placeholder="89701"   required></div>
+                        <div class="form-group mb-4"><label for="cartInputEmail1">Job Invoice No *</label> <input name="job_invoice_no" id="job_invoice_no" type="number" class="form-control" placeholder="89701"   required></div>
 
                         <div class="modal-footer"><button type="submit" class="btn btn-sm btn-gray-800 m-0">Accept</button></div>
                     </form>
@@ -296,8 +296,10 @@
             document.getElementById("deleteForm").setAttribute("action",`{{url('jobs/${id}')}}`);
         }
 
-        function executeAccept(id){
+        function executeAccept(id, invoice_no){
+            console.log(invoice_no);
             document.getElementById("acceptForm").setAttribute("action",`{{url('jobs/accept/${id}')}}`);
+            document.getElementById("job_invoice_no").value = invoice_no;
         }
 
     </script>
